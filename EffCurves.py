@@ -6,20 +6,13 @@ import os
 
 """_summary_
 
+We used this piece of code to calculate efficency curve for each PMT and find a good working point.
+
 The parser is a folder name, with files called PMT(number of PMT).txt. 
 
 In this file we will assume a familiar structure, which is the one the owner of this file used in the first place
 """
 
-parser = argparse.ArgumentParser(description = "This program accepts a path to a folder, it estimates efficency and associated error, and plots efficency as a function of HV")
-
-parser.add_argument("folder", type = str, help = "Path.txt")
-
-args = parser.parse_args()
-
-folder = args.folder
-
-files = glob.glob(os.path.join(folder, "PMT*.txt"))
 
 def eff_curve(data, A = 1 , V_ind = 0, T_ind = 1, C_ind = 2, PMTu_ind = 3, PMTd_ind = 4):
     
@@ -95,13 +88,25 @@ def plotting(x, y, y_err, titolo, format = '.', capsize = 3):
     
     return fig, ax
 
-A = {"PMT01": 1, "PMT02" : 0.4, "PMT04" : 1 , "PMT07" : 0.5 , "PMTOR" : 1}
+if __name__ == "__main__":
 
-for f in files:
-    title = os.path.splitext(os.path.basename(f))[0]
-    HV, eff, err, C_fake = eff_curve(np.loadtxt(f), A[title])
-    fig, ax = plotting(HV, eff, err, title)
-    plt.savefig(title+"EffCurve")
-    plt.show()
+    parser = argparse.ArgumentParser(description = "This program accepts a path to a folder, it estimates efficency and associated error, and plots efficency as a function of HV")
+
+    parser.add_argument("folder", type = str, help = "Path.txt")
+
+    args = parser.parse_args()
+
+    folder = args.folder
+
+    files = glob.glob(os.path.join(folder, "PMT*.txt"))
+
+    A = {"PMT01": 1, "PMT02" : 0.4, "PMT04" : 1 , "PMT07" : 0.5 , "PMTOR" : 1}
+
+    for f in files:
+        title = os.path.splitext(os.path.basename(f))[0]
+        HV, eff, err, C_fake = eff_curve(np.loadtxt(f), A[title])
+        fig, ax = plotting(HV, eff, err, title)
+        plt.savefig(title+"EffCurve")
+        plt.show()
     
     
