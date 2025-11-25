@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
 
-    ifstream FIFO("FIFOread_Take1.txt");
+    ifstream FIFO("FIFOread_Take0.txt");
 
     vector<double> CHv, CLKv;
 
