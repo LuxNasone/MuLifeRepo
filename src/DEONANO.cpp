@@ -3,80 +3,6 @@
 #include <vector>
 using namespace std;
 
-/*
-*
-*Meant to be used as root macros.
-*DecayTime is an analysis program that basically does this : 
-*(1) Imports a file (specified by a path given as an input) assumed to have to columns, that will be converted in CHv (it corresponds to
-*the channel that was activated at a given time) and CLKv (the time in which the channel was triggered)
-*(2) Loops over CHv until it finds 1 (START signal): if so it increments index until it finds a 2(STOP signal), if the difference is more 
-*than 8 clock cycles, it is multiplied by a calibration constant (see Calibration) and registered in an histogram.
-*(3) The histogram is then plotted, the user can work with it with various root utilities
-*/
-
-void DecayTime(const char* path) {
-
-    ifstream FIFO(path);
-
-    vector<double> CHv, CLKv;
-
-    double CH , CLK;
-
-    TH1F *h = new TH1F("Decay Time", "Histogram MuLife", 100, -1, 25);
-
-    while (FIFO >> CH >> CLK){
-
-        CHv.push_back(CH);
-
-        CLKv.push_back(CLK);
-
-    }
-
-    int N = CLKv.size();
-
-    double a = 4.98892e-3;
-
-    for (int i = 1 ; i < N ; i++){
-
-        if (CHv[i] == 1){
-
-            int j = i+1;
-            
-            while (j < N && CHv[j] != 1){
-                
-                double diff = CLKv[j]-CLKv[i];
-
-                if (CHv[j] == 2 && diff > 8){
-
-                    h->Fill(a * diff);
-
-                   break; 
-
-                }
-
-                else {
-
-                    j++;
-
-                }
-
-            }
-
-            i = j+1;
-
-        }
-
-    }
-
-    TCanvas* c = new TCanvas("c_decay", "Canvas Decay Time", 800, 600);
-
-    h->GetXaxis()->SetTitle("Decay Time [us]");
-
-    h->GetYaxis()->SetTitle("Counts [pure]");
-
-    h->Draw();
-
-}
 
 /*
 *Meant to be used as root macro.
@@ -199,4 +125,6 @@ void Delay(const char* path) {
 
     delay->Draw();
 }
+
+
 
